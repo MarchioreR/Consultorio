@@ -10,8 +10,8 @@ public class MySqlConnectionSingleton {
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String URL = "jdbc:mysql://127.0.0.1";
     private static final String PORT = "3306";
-    private static final String USER = "root";
-    private static final String PASS = "765267vitor";
+    private static final String USER = "usuario";
+    private static final String PASS = "123";
     private static final String DATABASE = "Consultorio";
     private static final String TIMEZONE = "useTimezone=true&serverTimezone=UTC";
 

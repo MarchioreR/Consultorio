@@ -9,6 +9,9 @@ import java.sql.Date;
 import java.util.ArrayList;
 
 import br.com.jvn.interfaces.InterfaceSistema;
+import br.com.jvn.models.Dentista;
+import br.com.jvn.models.Pessoa;
+import java.util.Iterator;
 
 /**
  *
@@ -17,6 +20,10 @@ import br.com.jvn.interfaces.InterfaceSistema;
 public class Sistema implements InterfaceSistema {
 
     private ArrayList<Pessoa> pessoas = new ArrayList<>();
+    private ArrayList<Agendamento> agendas = new ArrayList<>();
+    private ArrayList<Historico> historicos = new ArrayList<>();
+    private ArrayList<Prontuario> prontuarios = new ArrayList<>();
+    private ArrayList<Log> logs = new ArrayList<>();
 
     public Sistema() throws RemoteException {
         super(); // Call the parent class constructor
@@ -28,6 +35,9 @@ public class Sistema implements InterfaceSistema {
         novo.setIdade(idade);
         novo.setNome(nome);
         novo.setTel(tel);
+        novo.setId(GetNextPessoaID());
+        pessoas.add(novo);
+        /* DAO*/
         return novo;
     }
 
@@ -36,34 +46,99 @@ public class Sistema implements InterfaceSistema {
         switch (escolha) {
             case 1 -> {
                 p.setNome(mudanca);
-                break;
-            }
+                /*IF DAO Funciona retorna true*/            }
             case 2 -> {
                 p.setIdade(Integer.parseInt(mudanca));
-            }
+                /*IF DAO Funciona retorna true*/            }
             case 3 -> {
                 p.setEmail(mudanca);
-            }
+                /*IF DAO Funciona retorna true*/            }
             case 4 -> {
                 p.setTel(mudanca);
+                /*IF DAO Funciona retorna true*/            }
+            default -> {
+                return false;
             }
         }
         return false;
     }
+//  Consegue o objeto Pessoa em uma posição da lista
 
     public Pessoa GetPessoaOnPOS(int pos) {
         Pessoa pessoa = pessoas.get(pos);
         return pessoa;
     }
 
-    public boolean RemoverPessoa(int id) {
-        if (pessoas.get(id) != null) {
-            return true;
+    public int GetNextPessoaID() {
+        return pessoas.size();
+    }
+
+    public boolean RemoverPessoa(int id, int tipoPessoa) {
+        Iterator<Pessoa> iterator = pessoas.iterator();
+        switch (tipoPessoa) {
+            case 1 -> {
+                while (iterator.hasNext()) {
+                    Pessoa pessoa = iterator.next();
+                    if (pessoa instanceof Paciente && pessoa.getId() == id) {
+                        iterator.remove(); // Safe removal during iteration
+                    }
+                }
+            }
+            case 2 -> {
+                
+                while (iterator.hasNext()) {
+                    Pessoa pessoa = iterator.next();
+                    if (pessoa instanceof Dentista && pessoa.getId() == id) {
+                        iterator.remove(); // Safe removal during iteration
+                    }
+                }
+                return true;
+            }
+            default -> {
+                return false;
+            }
         }
         return false;
     }
 
-    public void BuscarPessoa() {
+    public Pessoa BuscarPessoa(String name, String tel, int option) {
+        for (Pessoa pessoa : pessoas) {
+            switch (option) {
+                case 1 -> {
+                    if (pessoa.getNome().equalsIgnoreCase(name)) {
+                        return pessoa;
+                    }
+                }
+                case 2 -> {
+                    if (pessoa.getTel().equals(tel)) {
+                        return pessoa;
+                    }
+                }
+                default -> {
+                    System.out.println("Opção inválida.");
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Paciente BuscarPacientePorId(int id) {
+        for (Pessoa pessoa : pessoas) {
+            if (pessoa instanceof Paciente && pessoa.getId() == id) {
+                return (Paciente) pessoa;
+            }
+        }
+        return null;
+    }
+
+    public Dentista BuscarDentistaPorId(int id) {
+        for (Pessoa pessoa : pessoas) {
+            if (pessoa instanceof Dentista && pessoa.getId() == id) {
+                return (Dentista) pessoa;
+            }
+        }
+        return null; // Not found
     }
 
     public Agendamento Agendar(int id, Date data, Dentista dentist, Paciente pacient) {
@@ -75,23 +150,30 @@ public class Sistema implements InterfaceSistema {
     }
 
     public int GetIDDentista() {
-        return 0;
+        int maxId = -1;
+        for (Pessoa pessoa : pessoas) {
+            if (pessoa instanceof Dentista) {
+                if (pessoa.getId() > maxId) {
+                    maxId = pessoa.getId();
+                }
+            }
+        }
+        return maxId + 1;
     }
 
     public int GetIDPaciente() {
-        return 0;
+        int maxId = -1;
+        for (Pessoa pessoa : pessoas) {
+            if (pessoa instanceof Paciente) {
+                if (pessoa.getId() > maxId) {
+                    maxId = pessoa.getId();
+                }
+            }
+        }
+        return maxId + 1;
     }
 
     public int GetAgendamento() {
         return 0;
-    }
-
-    public int GetIDPessoa(int id) {
-        return id;
-    }
-
-    @Override
-    public boolean AlterarPessoa(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

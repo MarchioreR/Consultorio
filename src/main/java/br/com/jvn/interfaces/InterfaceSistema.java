@@ -16,13 +16,19 @@ public interface InterfaceSistema {
 
     public Pessoa CriarPessoa(int id, int idade, String nome, String email, String tel);
 
-    public boolean AlterarPessoa(int id);
+    public boolean AlterarPessoa(int id, String mudanca, int escolha);
 
-    public boolean RemoverPessoa(int id);
+    public boolean RemoverPessoa(int id, int tipoPessoa);
 
-    public void BuscarPessoa();
+    public Pessoa BuscarPessoa(String name, String tel, int option);
+
+    public Dentista BuscarDentistaPorId(int id);
+
+    public Paciente BuscarPacientePorId(int id);
 
     public Pessoa GetPessoaOnPOS(int pos);
+
+    public int GetNextPessoaID();
 
     public Agendamento Agendar(int id, Date data, Dentista dentist, Paciente pacient);
 
@@ -33,6 +39,4 @@ public interface InterfaceSistema {
     public int GetIDPaciente();
 
     public int GetAgendamento();
-
-    public int GetIDPessoa(int id);
 }
