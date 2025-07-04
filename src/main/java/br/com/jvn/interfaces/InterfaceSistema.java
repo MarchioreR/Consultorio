@@ -14,7 +14,7 @@ import br.com.jvn.models.*;
  */
 public interface InterfaceSistema {
 
-    public Pessoa CriarPessoa(int id, int idade, String nome, String email, String tel);
+    public Pessoa CriarPessoa(int idade, String nome, String email, String tel);
 
     public boolean AlterarPessoa(int id, String mudanca, int escolha);
 
@@ -34,9 +34,9 @@ public interface InterfaceSistema {
 
     public Historico GerarHistorico(int id, Dentista dentist, Paciente pacient, Agendamento agenda);
 
-    public int GetIDDentista();
+    public int GetNextIDDentista();
 
-    public int GetIDPaciente();
+    public int GetNextIDPaciente();
 
     public int GetAgendamento();
 }

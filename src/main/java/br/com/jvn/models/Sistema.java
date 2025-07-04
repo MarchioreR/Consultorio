@@ -29,13 +29,9 @@ public class Sistema implements InterfaceSistema {
         super(); // Call the parent class constructor
     }
 
-    public Pessoa CriarPessoa(int id, int idade, String nome, String email, String tel) {
-        Pessoa novo = new Pessoa();
-        novo.setEmail(email);
-        novo.setIdade(idade);
-        novo.setNome(nome);
-        novo.setTel(tel);
-        novo.setId(GetNextPessoaID());
+    public Pessoa CriarPessoa(int idade, String nome, String email, String tel) {
+        int id = GetNextPessoaID();
+        Pessoa novo = new Pessoa(id, idade, nome, email, tel);
         pessoas.add(novo);
         /* DAO*/
         return novo;
@@ -62,7 +58,7 @@ public class Sistema implements InterfaceSistema {
         }
         return false;
     }
-//  Consegue o objeto Pessoa em uma posição da lista
+//  Consegue o objeto Pessoa em uma posição escolhida da tabela na view
 
     public Pessoa GetPessoaOnPOS(int pos) {
         Pessoa pessoa = pessoas.get(pos);
@@ -85,7 +81,7 @@ public class Sistema implements InterfaceSistema {
                 }
             }
             case 2 -> {
-                
+
                 while (iterator.hasNext()) {
                     Pessoa pessoa = iterator.next();
                     if (pessoa instanceof Dentista && pessoa.getId() == id) {
@@ -138,7 +134,7 @@ public class Sistema implements InterfaceSistema {
                 return (Dentista) pessoa;
             }
         }
-        return null; // Not found
+        return null;
     }
 
     public Agendamento Agendar(int id, Date data, Dentista dentist, Paciente pacient) {
@@ -149,7 +145,7 @@ public class Sistema implements InterfaceSistema {
         return null;
     }
 
-    public int GetIDDentista() {
+    public int GetNextIDDentista() {
         int maxId = -1;
         for (Pessoa pessoa : pessoas) {
             if (pessoa instanceof Dentista) {
@@ -161,7 +157,7 @@ public class Sistema implements InterfaceSistema {
         return maxId + 1;
     }
 
-    public int GetIDPaciente() {
+    public int GetNextIDPaciente() {
         int maxId = -1;
         for (Pessoa pessoa : pessoas) {
             if (pessoa instanceof Paciente) {

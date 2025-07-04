@@ -8,6 +8,10 @@ package br.com.jvn.models;
  *
  * @author vitor
  */
-public class Paciente extends Pessoa{
-    
+public class Paciente extends Pessoa {
+
+    public Paciente(int id, int idade, String nome, String email, String tel) {
+        super(id, idade, nome, email, tel);
+    }
+
 }
