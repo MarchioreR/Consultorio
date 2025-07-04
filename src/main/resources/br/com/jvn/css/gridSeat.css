@@ -1,0 +1,6 @@
+/* Remove espaçamento entre as células do GridPane */
+#gp_rm_assentos {
+    -fx-hgap: 0;
+    -fx-vgap: 0;
+    -fx-padding: 0;
+}

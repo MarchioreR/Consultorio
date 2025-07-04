@@ -1,0 +1,23 @@
+.button {
+    -fx-background-color: green; /* Verde */
+    -fx-text-fill: white; /* Texto branco */
+    -fx-font-size: 20px; /* Tamanho do símbolo */
+    -fx-font-weight: bold;
+    -fx-border-radius: 0; /* Borda quadrada */
+    -fx-background-radius: 0; /* Mantém o botão quadrado */
+    -fx-min-width: 50px; /* Largura mínima */
+    -fx-min-height: 50px; /* Altura mínima */
+    -fx-max-width: 50px;
+    -fx-max-height: 50px;
+    -fx-alignment: center; /* Centraliza o texto */
+    -fx-border-color: green; /* Borda mais escura */
+    -fx-border-width: 2px;
+}
+
+.button:hover {
+    -fx-background-color: green; /* Verde mais escuro ao passar o mouse */
+}
+
+.button:pressed {
+    -fx-background-color: green; /* Verde ainda mais escuro ao clicar */
+}
