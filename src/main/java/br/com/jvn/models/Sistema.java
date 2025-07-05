@@ -11,7 +11,11 @@ import java.util.ArrayList;
 import br.com.jvn.interfaces.InterfaceSistema;
 import br.com.jvn.models.Dentista;
 import br.com.jvn.models.Pessoa;
+import br.com.jvn.db.DataAccessObject;
+import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -29,89 +33,130 @@ public class Sistema implements InterfaceSistema {
         super(); // Call the parent class constructor
     }
 
-    public Pessoa CriarPessoa(int idade, String nome, String email, String tel) {
-        int id = GetNextPessoaID();
-        Pessoa novo = new Pessoa(id, idade, nome, email, tel);
-        pessoas.add(novo);
-        /* DAO*/
-        return novo;
+    public ArrayList<Pessoa> CriarListaPessoa() throws SQLException {
+        pessoas = DataAccessObject.carregarPessoasDoBanco();
+        return pessoas;
     }
 
-    public boolean AlterarPessoa(int id, String mudanca, int escolha) {
-        Pessoa p = GetPessoaOnPOS(id);
+    public void CriarDentista(ArrayList<Pessoa> pessoas, String nome, int idade, String email, String tel) {
+        int id = GetNextIDDentista(pessoas);
+        Dentista d = new Dentista(id, idade, nome, email, tel);
+        pessoas.add(d);
+        try {
+            DataAccessObject.inserirDentista(d);
+        } catch (SQLException ex) {
+            Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public boolean AlterarPessoa(ArrayList<Pessoa> pessoas, int id, String mudanca, int escolha) {
+        Pessoa p = GetPessoaOnPOS(pessoas, id);
         switch (escolha) {
             case 1 -> {
                 p.setNome(mudanca);
-                /*IF DAO Funciona retorna true*/            }
+                /*IF DAO Funciona retorna true*/ return true;
+            }
             case 2 -> {
                 p.setIdade(Integer.parseInt(mudanca));
-                /*IF DAO Funciona retorna true*/            }
+                /*IF DAO Funciona retorna true*/ return true;
+            }
             case 3 -> {
                 p.setEmail(mudanca);
-                /*IF DAO Funciona retorna true*/            }
+                /*IF DAO Funciona retorna true*/ return true;
+            }
             case 4 -> {
                 p.setTel(mudanca);
-                /*IF DAO Funciona retorna true*/            }
-            default -> {
-                return false;
-            }
-        }
-        return false;
-    }
-//  Consegue o objeto Pessoa em uma posição escolhida da tabela na view
-
-    public Pessoa GetPessoaOnPOS(int pos) {
-        Pessoa pessoa = pessoas.get(pos);
-        return pessoa;
-    }
-
-    public int GetNextPessoaID() {
-        return pessoas.size();
-    }
-
-    public boolean RemoverPessoa(int id, int tipoPessoa) {
-        Iterator<Pessoa> iterator = pessoas.iterator();
-        switch (tipoPessoa) {
-            case 1 -> {
-                while (iterator.hasNext()) {
-                    Pessoa pessoa = iterator.next();
-                    if (pessoa instanceof Paciente && pessoa.getId() == id) {
-                        iterator.remove(); // Safe removal during iteration
-                    }
-                }
-            }
-            case 2 -> {
-
-                while (iterator.hasNext()) {
-                    Pessoa pessoa = iterator.next();
-                    if (pessoa instanceof Dentista && pessoa.getId() == id) {
-                        iterator.remove(); // Safe removal during iteration
-                    }
-                }
+                /*IF DAO Funciona retorna true*/
                 return true;
             }
             default -> {
                 return false;
             }
         }
+    }
+
+//  Consegue o objeto Pessoa em uma posição escolhida da tabela na view
+    public Pessoa GetPessoaOnPOS(ArrayList<Pessoa> pessoas, int pos) {
+        Pessoa pessoa = pessoas.get(pos);
+        return pessoa;
+    }
+
+    public int GetNextPacienteID(ArrayList<Pessoa> pessoas) {
+        Iterator<Pessoa> iterator = pessoas.iterator();
+        int maxid = 0;
+        while (iterator.hasNext()) {
+            Pessoa pessoa = iterator.next();
+            if (pessoa instanceof Paciente) {
+                maxid = pessoa.getId();
+            }
+        }
+        return maxid + 1;
+    }
+
+    public int GetNextDentistaID(ArrayList<Pessoa> pessoas) {
+        Iterator<Pessoa> iterator = pessoas.iterator();
+        int maxid = 0;
+        while (iterator.hasNext()) {
+            Pessoa pessoa = iterator.next();
+            if (pessoa instanceof Dentista) {
+                maxid = pessoa.getId();
+            }
+        }
+        return maxid + 1;
+
+    }
+
+    public boolean RemoverDentista(ArrayList<Pessoa> pessoas, int id) {
+        Iterator<Pessoa> iterator = pessoas.iterator();
+        while (iterator.hasNext()) {
+            System.out.println("Entrou no while");
+            Pessoa pessoa = iterator.next();
+            System.out.println("ID = " + id);
+            if (pessoa instanceof Dentista && pessoa.getId() == id) {
+                try {
+                    System.out.println("FOUND");
+                    DataAccessObject.deletarDentista((Dentista) pessoa);
+                    iterator.remove(); // only remove if DB deletion succeeds
+                    return true;
+                } catch (SQLException ex) {
+                    Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
+                    return false;
+                }
+            }
+        }
         return false;
     }
 
-    public Pessoa BuscarPessoa(String name, String tel, int option) {
+    /*
+            // Paciente
+            if (tipoPessoa == 1 && pessoa instanceof Paciente && pessoa.getId() == id) {
+                try {
+                    System.out.println("FOUND");
+                    DataAccessObject.deletarPaciente((Paciente) pessoa);
+                    iterator.remove();
+                    return true;
+                } catch (SQLException ex) {
+                    Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
+                    return false;
+                }
+            }
+
+            // Dentista*/
+    public Pessoa BuscarPessoa(ArrayList<Pessoa> pessoas, String busca, int option) {
         for (Pessoa pessoa : pessoas) {
             switch (option) {
                 case 1 -> {
-                    if (pessoa.getNome().equalsIgnoreCase(name)) {
+                    if (pessoa.getNome().equalsIgnoreCase(busca)) {
                         return pessoa;
                     }
                 }
                 case 2 -> {
-                    if (pessoa.getTel().equals(tel)) {
+                    if (pessoa.getTel().equals(busca)) {
                         return pessoa;
                     }
                 }
                 default -> {
-                    System.out.println("Opção inválida.");
                     return null;
                 }
             }
@@ -119,7 +164,7 @@ public class Sistema implements InterfaceSistema {
         return null;
     }
 
-    public Paciente BuscarPacientePorId(int id) {
+    public Paciente BuscarPacientePorId(ArrayList<Pessoa> pessoas, int id) {
         for (Pessoa pessoa : pessoas) {
             if (pessoa instanceof Paciente && pessoa.getId() == id) {
                 return (Paciente) pessoa;
@@ -128,7 +173,7 @@ public class Sistema implements InterfaceSistema {
         return null;
     }
 
-    public Dentista BuscarDentistaPorId(int id) {
+    public Dentista BuscarDentistaPorId(ArrayList<Pessoa> pessoas, int id) {
         for (Pessoa pessoa : pessoas) {
             if (pessoa instanceof Dentista && pessoa.getId() == id) {
                 return (Dentista) pessoa;
@@ -145,7 +190,7 @@ public class Sistema implements InterfaceSistema {
         return null;
     }
 
-    public int GetNextIDDentista() {
+    public int GetNextIDDentista(ArrayList<Pessoa> pessoas) {
         int maxId = -1;
         for (Pessoa pessoa : pessoas) {
             if (pessoa instanceof Dentista) {
@@ -157,7 +202,7 @@ public class Sistema implements InterfaceSistema {
         return maxId + 1;
     }
 
-    public int GetNextIDPaciente() {
+    public int GetNextIDPaciente(ArrayList<Pessoa> pessoas) {
         int maxId = -1;
         for (Pessoa pessoa : pessoas) {
             if (pessoa instanceof Paciente) {

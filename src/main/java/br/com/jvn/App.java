@@ -1,5 +1,6 @@
 package br.com.jvn;
 
+import br.com.jvn.db.DataAccessObject;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,8 +8,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import br.com.jvn.db.FactoryConnection;
+import br.com.jvn.models.Dentista;
+import br.com.jvn.models.Paciente;
+import br.com.jvn.models.Pessoa;
+import br.com.jvn.models.Sistema;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * JavaFX App
@@ -36,12 +43,10 @@ public class App extends Application {
         return fxmlLoader.load();
     }
 
-    public static void main(String[] args) throws SQLException {
-        
-        if (FactoryConnection.createConnection() != null)
-            System.out.println("Ligou");
-        else
-            System.out.println("NAO LIGOU");
+    public static void main(String[] args) throws SQLException, RemoteException {
+
+        Sistema s = new Sistema();
+        ArrayList<Pessoa> pessoas = DataAccessObject.carregarPessoasDoBanco();
         launch();
     }
 

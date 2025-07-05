@@ -7,6 +7,8 @@ package br.com.jvn.interfaces;
 import java.sql.Date;
 
 import br.com.jvn.models.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  *
@@ -14,29 +16,33 @@ import br.com.jvn.models.*;
  */
 public interface InterfaceSistema {
 
-    public Pessoa CriarPessoa(int idade, String nome, String email, String tel);
+    public boolean AlterarPessoa(ArrayList<Pessoa> pessoas, int id, String mudanca, int escolha);
 
-    public boolean AlterarPessoa(int id, String mudanca, int escolha);
+    public boolean RemoverDentista(ArrayList<Pessoa> pessoas, int id);
 
-    public boolean RemoverPessoa(int id, int tipoPessoa);
+    public Pessoa BuscarPessoa(ArrayList<Pessoa> pessoas, String busca, int option);
 
-    public Pessoa BuscarPessoa(String name, String tel, int option);
+    public Dentista BuscarDentistaPorId(ArrayList<Pessoa> pessoas, int id);
 
-    public Dentista BuscarDentistaPorId(int id);
+    public Paciente BuscarPacientePorId(ArrayList<Pessoa> pessoas, int id);
 
-    public Paciente BuscarPacientePorId(int id);
+    public Pessoa GetPessoaOnPOS(ArrayList<Pessoa> pessoas, int pos);
 
-    public Pessoa GetPessoaOnPOS(int pos);
+    public int GetNextDentistaID(ArrayList<Pessoa> pessoas);
 
-    public int GetNextPessoaID();
+    public int GetNextPacienteID(ArrayList<Pessoa> pessoas);
+
+    public void CriarDentista(ArrayList<Pessoa> pessoas, String nome, int idade, String email, String tel);
 
     public Agendamento Agendar(int id, Date data, Dentista dentist, Paciente pacient);
 
     public Historico GerarHistorico(int id, Dentista dentist, Paciente pacient, Agendamento agenda);
 
-    public int GetNextIDDentista();
+    public int GetNextIDDentista(ArrayList<Pessoa> pessoas);
 
-    public int GetNextIDPaciente();
+    public int GetNextIDPaciente(ArrayList<Pessoa> pessoas);
 
     public int GetAgendamento();
+
+    public ArrayList<Pessoa> CriarListaPessoa() throws SQLException;
 }
