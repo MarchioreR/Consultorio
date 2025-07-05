@@ -45,7 +45,17 @@ public class Sistema implements InterfaceSistema {
         } catch (SQLException ex) {
             Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+    }
+    
+    public void CriarPaciente(String nome, int idade, String email, String tel) {
+        int id = GetNextIDPaciente();
+        Paciente p = new Paciente(id, idade, nome, email, tel);
+        pessoas.add(p);
+        try {
+            DataAccessObject.inserirPaciente(p);
+        } catch (SQLException ex) {
+            Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public boolean AlterarDentista(int id, String mudanca, int escolha) throws SQLException {

@@ -20,9 +20,19 @@ public interface InterfaceSistema {
 
     public void CriarDentista(String nome, int idade, String email, String tel);
 
+    public void CriarPaciente(String nome, int idade, String email, String tel);
+
     public boolean AlterarDentista(int id, String mudanca, int escolha) throws SQLException;
 
     public boolean AlterarPaciente(int id, String mudanca, int escolha) throws SQLException;
+
+    public boolean RemoverDentista(int id);
+
+    public boolean RemoverPaciente(int id);
+
+    public Paciente BuscarPacientePorId(int id);
+
+    public Dentista BuscarDentistaPorId(int id);
 
     public Pessoa GetPessoaOnPOS(int pos);
 
@@ -30,15 +40,7 @@ public interface InterfaceSistema {
 
     public int GetNextDentistaID();
 
-    public boolean RemoverDentista(int id);
-
-    public boolean RemoverPaciente(int id);
-
     public Pessoa BuscarPessoa(String busca, int option);
-
-    public Paciente BuscarPacientePorId(int id);
-
-    public Dentista BuscarDentistaPorId(int id);
 
     public Agendamento Agendar(int id, Date data, Dentista dentist, Paciente pacient);
 
