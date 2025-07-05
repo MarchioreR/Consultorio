@@ -47,6 +47,17 @@ public class App extends Application {
 
         Sistema s = new Sistema();
         ArrayList<Pessoa> pessoas = DataAccessObject.carregarPessoasDoBanco();
+        s.pessoas = pessoas;
+        for (Pessoa pessoa : pessoas) {
+            System.out.print(pessoa.getId() + pessoa.getNome() + " ");
+        }
+        System.out.println("Tamanho da lista pessoas: " + pessoas.size());
+        System.out.println();
+        s.RemoverDentista(2);
+        for (Pessoa pessoa : pessoas) {
+            System.out.print(pessoa.getId() + pessoa.getNome() + " ");
+        }
+        System.out.println();
         launch();
     }
 

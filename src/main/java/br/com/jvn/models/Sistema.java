@@ -23,11 +23,11 @@ import java.util.logging.Logger;
  */
 public class Sistema implements InterfaceSistema {
 
-    private ArrayList<Pessoa> pessoas = new ArrayList<>();
-    private ArrayList<Agendamento> agendas = new ArrayList<>();
-    private ArrayList<Historico> historicos = new ArrayList<>();
-    private ArrayList<Prontuario> prontuarios = new ArrayList<>();
-    private ArrayList<Log> logs = new ArrayList<>();
+    public ArrayList<Pessoa> pessoas = new ArrayList<>();
+    public ArrayList<Agendamento> agendas = new ArrayList<>();
+    public ArrayList<Historico> historicos = new ArrayList<>();
+    public ArrayList<Prontuario> prontuarios = new ArrayList<>();
+    public ArrayList<Log> logs = new ArrayList<>();
 
     public Sistema() throws RemoteException {
         super(); // Call the parent class constructor
@@ -38,8 +38,8 @@ public class Sistema implements InterfaceSistema {
         return pessoas;
     }
 
-    public void CriarDentista(ArrayList<Pessoa> pessoas, String nome, int idade, String email, String tel) {
-        int id = GetNextIDDentista(pessoas);
+    public void CriarDentista(String nome, int idade, String email, String tel) {
+        int id = GetNextIDDentista();
         Dentista d = new Dentista(id, idade, nome, email, tel);
         pessoas.add(d);
         try {
@@ -50,8 +50,8 @@ public class Sistema implements InterfaceSistema {
 
     }
 
-    public boolean AlterarPessoa(ArrayList<Pessoa> pessoas, int id, String mudanca, int escolha) {
-        Pessoa p = GetPessoaOnPOS(pessoas, id);
+    public boolean AlterarPessoa(int id, String mudanca, int escolha) {
+        Pessoa p = GetPessoaOnPOS(id);
         switch (escolha) {
             case 1 -> {
                 p.setNome(mudanca);
@@ -77,12 +77,12 @@ public class Sistema implements InterfaceSistema {
     }
 
 //  Consegue o objeto Pessoa em uma posição escolhida da tabela na view
-    public Pessoa GetPessoaOnPOS(ArrayList<Pessoa> pessoas, int pos) {
+    public Pessoa GetPessoaOnPOS(int pos) {
         Pessoa pessoa = pessoas.get(pos);
         return pessoa;
     }
 
-    public int GetNextPacienteID(ArrayList<Pessoa> pessoas) {
+    public int GetNextPacienteID() {
         Iterator<Pessoa> iterator = pessoas.iterator();
         int maxid = 0;
         while (iterator.hasNext()) {
@@ -94,7 +94,7 @@ public class Sistema implements InterfaceSistema {
         return maxid + 1;
     }
 
-    public int GetNextDentistaID(ArrayList<Pessoa> pessoas) {
+    public int GetNextDentistaID() {
         Iterator<Pessoa> iterator = pessoas.iterator();
         int maxid = 0;
         while (iterator.hasNext()) {
@@ -107,7 +107,7 @@ public class Sistema implements InterfaceSistema {
 
     }
 
-    public boolean RemoverDentista(ArrayList<Pessoa> pessoas, int id) {
+    public boolean RemoverDentista(int id) {
         Iterator<Pessoa> iterator = pessoas.iterator();
         while (iterator.hasNext()) {
             System.out.println("Entrou no while");
@@ -143,7 +143,7 @@ public class Sistema implements InterfaceSistema {
             }
 
             // Dentista*/
-    public Pessoa BuscarPessoa(ArrayList<Pessoa> pessoas, String busca, int option) {
+    public Pessoa BuscarPessoa(String busca, int option) {
         for (Pessoa pessoa : pessoas) {
             switch (option) {
                 case 1 -> {
@@ -164,7 +164,7 @@ public class Sistema implements InterfaceSistema {
         return null;
     }
 
-    public Paciente BuscarPacientePorId(ArrayList<Pessoa> pessoas, int id) {
+    public Paciente BuscarPacientePorId(int id) {
         for (Pessoa pessoa : pessoas) {
             if (pessoa instanceof Paciente && pessoa.getId() == id) {
                 return (Paciente) pessoa;
@@ -173,7 +173,7 @@ public class Sistema implements InterfaceSistema {
         return null;
     }
 
-    public Dentista BuscarDentistaPorId(ArrayList<Pessoa> pessoas, int id) {
+    public Dentista BuscarDentistaPorId(int id) {
         for (Pessoa pessoa : pessoas) {
             if (pessoa instanceof Dentista && pessoa.getId() == id) {
                 return (Dentista) pessoa;
@@ -190,7 +190,7 @@ public class Sistema implements InterfaceSistema {
         return null;
     }
 
-    public int GetNextIDDentista(ArrayList<Pessoa> pessoas) {
+    public int GetNextIDDentista() {
         int maxId = -1;
         for (Pessoa pessoa : pessoas) {
             if (pessoa instanceof Dentista) {
@@ -202,7 +202,7 @@ public class Sistema implements InterfaceSistema {
         return maxId + 1;
     }
 
-    public int GetNextIDPaciente(ArrayList<Pessoa> pessoas) {
+    public int GetNextIDPaciente() {
         int maxId = -1;
         for (Pessoa pessoa : pessoas) {
             if (pessoa instanceof Paciente) {
