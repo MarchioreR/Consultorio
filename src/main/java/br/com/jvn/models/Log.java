@@ -11,10 +11,21 @@ import java.util.Date;
  * @author vitor
  */
 public class Log {
+
     private int id;
     private String usuario;
     private Date data_hora;
     private String comando_sql;
+
+    public Log() {
+    }
+
+    public Log(int id, String usuario, Date data_hora, String comando_sql) {
+        this.id = id;
+        this.usuario = usuario;
+        this.data_hora = data_hora;
+        this.comando_sql = comando_sql;
+    }
 
     /**
      * @return the id

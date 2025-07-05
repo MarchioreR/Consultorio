@@ -14,4 +14,7 @@ public class Paciente extends Pessoa {
         super(id, idade, nome, email, tel);
     }
 
+    public Paciente() {
+
+    }
 }

@@ -24,6 +24,10 @@ public class Pessoa {
         this.tel = tel;
     }
 
+    public Pessoa() {
+
+    }
+
     /**
      * @return the id
      */
