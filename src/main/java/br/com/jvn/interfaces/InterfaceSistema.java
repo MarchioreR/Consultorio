@@ -16,23 +16,29 @@ import java.util.ArrayList;
  */
 public interface InterfaceSistema {
 
-    public boolean AlterarPessoa(int id, String mudanca, int escolha);
+    public ArrayList<Pessoa> CriarListaPessoa() throws SQLException;
 
-    public boolean RemoverDentista(int id);
+    public void CriarDentista(String nome, int idade, String email, String tel);
 
-    public Pessoa BuscarPessoa(String busca, int option);
+    public boolean AlterarDentista(int id, String mudanca, int escolha) throws SQLException;
 
-    public Dentista BuscarDentistaPorId(int id);
-
-    public Paciente BuscarPacientePorId(int id);
+    public boolean AlterarPaciente(int id, String mudanca, int escolha) throws SQLException;
 
     public Pessoa GetPessoaOnPOS(int pos);
 
-    public int GetNextDentistaID();
-
     public int GetNextPacienteID();
 
-    public void CriarDentista(String nome, int idade, String email, String tel);
+    public int GetNextDentistaID();
+
+    public boolean RemoverDentista(int id);
+
+    public boolean RemoverPaciente(int id);
+
+    public Pessoa BuscarPessoa(String busca, int option);
+
+    public Paciente BuscarPacientePorId(int id);
+
+    public Dentista BuscarDentistaPorId(int id);
 
     public Agendamento Agendar(int id, Date data, Dentista dentist, Paciente pacient);
 
@@ -44,5 +50,4 @@ public interface InterfaceSistema {
 
     public int GetAgendamento();
 
-    public ArrayList<Pessoa> CriarListaPessoa() throws SQLException;
 }

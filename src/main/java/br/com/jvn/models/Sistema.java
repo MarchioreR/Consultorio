@@ -9,8 +9,6 @@ import java.sql.Date;
 import java.util.ArrayList;
 
 import br.com.jvn.interfaces.InterfaceSistema;
-import br.com.jvn.models.Dentista;
-import br.com.jvn.models.Pessoa;
 import br.com.jvn.db.DataAccessObject;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -50,24 +48,56 @@ public class Sistema implements InterfaceSistema {
 
     }
 
-    public boolean AlterarPessoa(int id, String mudanca, int escolha) {
-        Pessoa p = GetPessoaOnPOS(id);
+    public boolean AlterarDentista(int id, String mudanca, int escolha) throws SQLException {
+        Dentista d = BuscarDentistaPorId(id);
+        switch (escolha) {
+            case 1 -> {
+                d.setNome(mudanca);
+                DataAccessObject.atualizarDentista(d, mudanca, escolha);
+                return true;
+            }
+            case 2 -> {
+                d.setIdade(Integer.parseInt(mudanca));
+                DataAccessObject.atualizarDentista(d, mudanca, escolha);
+                return true;
+            }
+            case 3 -> {
+                d.setEmail(mudanca);
+                DataAccessObject.atualizarDentista(d, mudanca, escolha);
+                return true;
+            }
+            case 4 -> {
+                d.setTel(mudanca);
+                DataAccessObject.atualizarDentista(d, mudanca, escolha);
+                return true;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
+    
+    public boolean AlterarPaciente(int id, String mudanca, int escolha) throws SQLException {
+        Paciente p = BuscarPacientePorId(id);
         switch (escolha) {
             case 1 -> {
                 p.setNome(mudanca);
-                /*IF DAO Funciona retorna true*/ return true;
+                DataAccessObject.atualizarPaciente(p, mudanca, escolha);
+                return true;
             }
             case 2 -> {
                 p.setIdade(Integer.parseInt(mudanca));
-                /*IF DAO Funciona retorna true*/ return true;
+                DataAccessObject.atualizarPaciente(p, mudanca, escolha);
+                return true;
             }
             case 3 -> {
                 p.setEmail(mudanca);
-                /*IF DAO Funciona retorna true*/ return true;
+                DataAccessObject.atualizarPaciente(p, mudanca, escolha);
+                return true;
             }
             case 4 -> {
                 p.setTel(mudanca);
-                /*IF DAO Funciona retorna true*/
+                DataAccessObject.atualizarPaciente(p, mudanca, escolha);
                 return true;
             }
             default -> {
@@ -110,14 +140,11 @@ public class Sistema implements InterfaceSistema {
     public boolean RemoverDentista(int id) {
         Iterator<Pessoa> iterator = pessoas.iterator();
         while (iterator.hasNext()) {
-            System.out.println("Entrou no while");
             Pessoa pessoa = iterator.next();
-            System.out.println("ID = " + id);
             if (pessoa instanceof Dentista && pessoa.getId() == id) {
                 try {
-                    System.out.println("FOUND");
                     DataAccessObject.deletarDentista((Dentista) pessoa);
-                    iterator.remove(); // only remove if DB deletion succeeds
+                    iterator.remove();
                     return true;
                 } catch (SQLException ex) {
                     Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
@@ -127,12 +154,13 @@ public class Sistema implements InterfaceSistema {
         }
         return false;
     }
-
-    /*
-            // Paciente
-            if (tipoPessoa == 1 && pessoa instanceof Paciente && pessoa.getId() == id) {
+    
+    public boolean RemoverPaciente(int id) {
+        Iterator<Pessoa> iterator = pessoas.iterator();
+        while (iterator.hasNext()) {
+            Pessoa pessoa = iterator.next();
+            if (pessoa instanceof Paciente && pessoa.getId() == id) {
                 try {
-                    System.out.println("FOUND");
                     DataAccessObject.deletarPaciente((Paciente) pessoa);
                     iterator.remove();
                     return true;
@@ -141,8 +169,10 @@ public class Sistema implements InterfaceSistema {
                     return false;
                 }
             }
-
-            // Dentista*/
+        }
+        return false;
+    }
+    
     public Pessoa BuscarPessoa(String busca, int option) {
         for (Pessoa pessoa : pessoas) {
             switch (option) {

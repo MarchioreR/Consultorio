@@ -66,6 +66,19 @@ public class DataAccessObject {
             stmt.executeUpdate();
         }
     }
+    
+    public static void inserirPaciente(Paciente p) throws SQLException {
+        Connection conn = FactoryConnection.createConnection();
+        String sql = "INSERT INTO Paciente (id, nome, idade, email, telefone) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, p.getId());
+            stmt.setString(2, p.getNome());
+            stmt.setInt(3, p.getIdade());
+            stmt.setString(4, p.getEmail());
+            stmt.setString(5, p.getTel());
+            stmt.executeUpdate();
+        }
+    }
 
     public static void deletarDentista(Dentista d) throws SQLException {
         Connection conn = FactoryConnection.createConnection();
@@ -76,7 +89,7 @@ public class DataAccessObject {
             stmt.executeUpdate();
         }
     }
-    
+
     public static void deletarPaciente(Paciente p) throws SQLException {
         Connection conn = FactoryConnection.createConnection();
         String sql = "DELETE FROM Paciente WHERE id > ?";
@@ -87,4 +100,71 @@ public class DataAccessObject {
         }
     }
 
+    public static void atualizarDentista(Dentista d, String change, int option) throws SQLException {
+        Connection conn = FactoryConnection.createConnection();
+        String sql = null;
+
+        switch (option) {
+            case 1 ->
+                sql = "UPDATE Dentista SET nome = ? WHERE id = ?";
+            case 2 ->
+                sql = "UPDATE Dentista SET idade = ? WHERE id = ?";
+            case 3 ->
+                sql = "UPDATE Dentista SET email = ? WHERE id = ?";
+            case 4 ->
+                sql = "UPDATE Dentista SET telefone = ? WHERE id = ?";
+            default -> {
+                System.out.println("Opção inválida.");
+                return;
+            }
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            if (option == 2) {
+                stmt.setInt(1, Integer.parseInt(change));
+            } else {
+                stmt.setString(1, change);
+            }
+
+            stmt.setInt(2, d.getId());
+            stmt.executeUpdate();
+            System.out.println("Atualizacao realizada com sucesso.");
+        } catch (NumberFormatException e) {
+            System.out.println("Erro: valor inválido para idade.");
+        }
+    }
+
+    public static void atualizarPaciente(Paciente p, String change, int option) throws SQLException {
+        Connection conn = FactoryConnection.createConnection();
+        String sql = null;
+
+        switch (option) {
+            case 1 ->
+                sql = "UPDATE Paciente SET nome = ? WHERE id = ?";
+            case 2 ->
+                sql = "UPDATE Paciente SET idade = ? WHERE id = ?";
+            case 3 ->
+                sql = "UPDATE Paciente SET email = ? WHERE id = ?";
+            case 4 ->
+                sql = "UPDATE Paciente SET telefone = ? WHERE id = ?";
+            default -> {
+                System.out.println("Opção inválida.");
+                return;
+            }
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            if (option == 2) {
+                stmt.setInt(1, Integer.parseInt(change));
+            } else {
+                stmt.setString(1, change);
+            }
+
+            stmt.setInt(2, p.getId());
+            stmt.executeUpdate();
+            System.out.println("Atualizacao realizada com sucesso.");
+        } catch (NumberFormatException e) {
+            System.out.println("Erro: valor inválido para idade.");
+        }
+    }
 }

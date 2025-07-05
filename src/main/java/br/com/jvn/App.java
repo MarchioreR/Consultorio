@@ -51,9 +51,7 @@ public class App extends Application {
         for (Pessoa pessoa : pessoas) {
             System.out.print(pessoa.getId() + pessoa.getNome() + " ");
         }
-        System.out.println("Tamanho da lista pessoas: " + pessoas.size());
-        System.out.println();
-        s.RemoverDentista(2);
+        s.AlterarDentista(1,"33",2);
         for (Pessoa pessoa : pessoas) {
             System.out.print(pessoa.getId() + pessoa.getNome() + " ");
         }
