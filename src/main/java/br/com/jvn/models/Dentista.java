@@ -13,5 +13,4 @@ public class Dentista extends Pessoa {
     public Dentista(int id, int idade, String nome, String email, String tel) {
         super(id, idade, nome, email, tel);
     }
-
 }

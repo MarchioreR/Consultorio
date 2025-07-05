@@ -9,12 +9,22 @@ package br.com.jvn.models;
  * @author vitor
  */
 public class Historico {
-    
+
     private int id;
     private Dentista dentist;
     private Paciente pacient;
     private Agendamento agenda;
-    
+
+    public Historico() {
+    }
+
+    public Historico(int id, Dentista dentist, Paciente pacient, Agendamento agenda) {
+        this.id = id;
+        this.dentist = dentist;
+        this.pacient = pacient;
+        this.agenda = agenda;
+    }
+
     /**
      * @return the dentist
      */
@@ -70,6 +80,5 @@ public class Historico {
     public void setId(int id) {
         this.id = id;
     }
-    
-    
+
 }

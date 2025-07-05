@@ -15,6 +15,17 @@ public class Prontuario {
     private Dentista dentista;
     private Paciente paciente;
 
+    public Prontuario(int id, String relatorio, Agendamento agenda, Dentista dentista, Paciente paciente) {
+        this.id = id;
+        this.relatorio = relatorio;
+        this.agenda = agenda;
+        this.dentista = dentista;
+        this.paciente = paciente;
+    }
+
+    public Prontuario() {
+    }
+
     /**
      * @return the id
      */

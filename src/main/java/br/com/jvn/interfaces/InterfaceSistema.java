@@ -8,6 +8,7 @@ import java.sql.Date;
 
 import br.com.jvn.models.*;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
 
 /**
@@ -16,23 +17,31 @@ import java.util.ArrayList;
  */
 public interface InterfaceSistema {
 
-    public ArrayList<Pessoa> CriarListaPessoa() throws SQLException;
+    public void CriarListaPessoa() throws SQLException;
+
+    public void CriarListaAgendamento() throws SQLException;
+
+    public void CriarListaProntuario() throws SQLException;
+
+    public void CriarListaHistorico() throws SQLException;
 
     public void CriarDentista(String nome, int idade, String email, String tel);
 
     public void CriarPaciente(String nome, int idade, String email, String tel);
 
+    public void CriarAgendamento(Date data, Time horario, Dentista dentist, Paciente pacient);
+
+    public void CriarProntuario(String relatorio, Agendamento agenda, Dentista dentist, Paciente pacient);
+
+    public void CriarHistorico(Agendamento agenda, Dentista dentist, Paciente pacient);
+
+    public void CriarListaViewAgendamentosHoje() throws SQLException;
+
+    public void CriarListaViewAgendamentoPaciente() throws SQLException;
+
     public boolean AlterarDentista(int id, String mudanca, int escolha) throws SQLException;
 
     public boolean AlterarPaciente(int id, String mudanca, int escolha) throws SQLException;
-
-    public boolean RemoverDentista(int id);
-
-    public boolean RemoverPaciente(int id);
-
-    public Paciente BuscarPacientePorId(int id);
-
-    public Dentista BuscarDentistaPorId(int id);
 
     public Pessoa GetPessoaOnPOS(int pos);
 
@@ -40,16 +49,25 @@ public interface InterfaceSistema {
 
     public int GetNextDentistaID();
 
+    public boolean RemoverDentista(int id);
+
+    public boolean RemoverPaciente(int id);
+
+    public boolean RemoverAgendamento(int id);
+
+    public boolean RemoverProntuario(int id);
+
+    public boolean RemoverHistorico(int id);
+
+    public Paciente BuscarPacientePorId(int id);
+
+    public Dentista BuscarDentistaPorId(int id);
+
+    public Agendamento BuscarAgendamentoPorId(int id);
+
+    public Prontuario BuscarProntuarioPorId(int id);
+
+    public Historico BuscarHistoricoPorId(int id);
+
     public Pessoa BuscarPessoa(String busca, int option);
-
-    public Agendamento Agendar(int id, Date data, Dentista dentist, Paciente pacient);
-
-    public Historico GerarHistorico(int id, Dentista dentist, Paciente pacient, Agendamento agenda);
-
-    public int GetNextIDDentista();
-
-    public int GetNextIDPaciente();
-
-    public int GetAgendamento();
-
 }

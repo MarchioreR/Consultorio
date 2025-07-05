@@ -8,13 +8,17 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import br.com.jvn.db.FactoryConnection;
+import br.com.jvn.models.Agendamento;
 import br.com.jvn.models.Dentista;
 import br.com.jvn.models.Paciente;
 import br.com.jvn.models.Pessoa;
+import br.com.jvn.models.Prontuario;
 import br.com.jvn.models.Sistema;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
 
 /**
@@ -45,17 +49,46 @@ public class App extends Application {
 
     public static void main(String[] args) throws SQLException, RemoteException {
 
-        Sistema s = new Sistema();
-        ArrayList<Pessoa> pessoas = DataAccessObject.carregarPessoasDoBanco();
-        s.pessoas = pessoas;
-        for (Pessoa pessoa : pessoas) {
-            System.out.print(pessoa.getId() + pessoa.getNome() + " ");
+        Sistema s = new Sistema("leitura", "");
+        /*
+        s.CriarListaPessoa();
+        s.CriarListaAgendamento();
+        s.CriarListaViewAgendamentosHoje();
+        
+        SEQUENCIA PARA VER A VIEW AGENDAMENTOS HOJE
+        
+        PRA UMA PESSOA QUE SÓ TEM PERMISSÃO DE LEITURA, PRA ELA PODER VER UMA VIEW TEM QUE 
+        PRIMEIRO CRIAR TODAS AS LISTAS QUE ESTÃO ENVOLVIDAS NA VIEW E DEPOIS 
+        DAR SELECT NA VIEW
+        
+        
+        
+        s.CriarListaPessoa();
+        s.CriarListaAgendamento();
+        s.CriarListaViewAgendamentoPaciente();
+        for (Agendamento agenda : s.agendas) {
+            System.out.print(agenda.getDentist().getNome() + " " + agenda.getData() + " " + agenda.getHorario() + " ");
+            System.out.println();
         }
-        s.AlterarDentista(1,"33",2);
-        for (Pessoa pessoa : pessoas) {
-            System.out.print(pessoa.getId() + pessoa.getNome() + " ");
+        
+        
+        SEQUENCIA PARA VER A VIEW AGENDAMENTO PACIENTE
+        
+        PRA UMA PESSOA QUE SÓ TEM PERMISSÃO DE LEITURA, PRA ELA PODER VER UMA VIEW TEM QUE 
+        PRIMEIRO CRIAR TODAS AS LISTAS QUE ESTÃO ENVOLVIDAS NA VIEW E DEPOIS 
+        DAR SELECT NA VIEW
+        
+         */
+
+        s.CriarListaPessoa();
+        s.CriarListaAgendamento();
+        s.CriarListaHistorico();
+
+        for (Prontuario pront : s.prontuarios) {
+            System.out.print(pront.getDentista().getId() + " " + pront.getRelatorio() + " " + pront.getPaciente().getId() + " ");
+            System.out.println();
         }
-        System.out.println();
+
         launch();
     }
 

@@ -4,18 +4,31 @@
  */
 package br.com.jvn.models;
 
-import java.util.Date;
+import java.sql.Date;
+import java.sql.Time;
 
 /**
  *
  * @author vitor
  */
 public class Agendamento {
-    
+
     private int id;
     private Date data;
+    private Time horario;
     private Dentista dentist;
     private Paciente pacient;
+
+    public Agendamento() {
+    }
+
+    public Agendamento(int id, Date data, Time horario, Dentista dentist, Paciente pacient) {
+        this.id = id;
+        this.data = data;
+        this.horario = horario;
+        this.dentist = dentist;
+        this.pacient = pacient;
+    }
 
     /**
      * @return the id
@@ -71,5 +84,19 @@ public class Agendamento {
      */
     public void setPacient(Paciente pacient) {
         this.pacient = pacient;
+    }
+
+    /**
+     * @return the horario
+     */
+    public Time getHorario() {
+        return horario;
+    }
+
+    /**
+     * @param horario the horario to set
+     */
+    public void setHorario(Time horario) {
+        this.horario = horario;
     }
 }
