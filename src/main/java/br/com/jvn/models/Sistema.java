@@ -10,8 +10,13 @@ import java.util.ArrayList;
 
 import br.com.jvn.interfaces.InterfaceSistema;
 import br.com.jvn.db.DataAccessObject;
+import static br.com.jvn.db.DataAccessObject.convertStringToSqlDate;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -205,6 +210,9 @@ public class Sistema implements InterfaceSistema {
 
     public boolean AlterarDentista(int id, String mudanca, int escolha) throws SQLException {
         Dentista d = BuscarDentistaPorId(id);
+        if (d == null) {
+            return false;
+        }
         switch (escolha) {
             case 1 -> {
                 d.setNome(mudanca);
@@ -266,6 +274,9 @@ public class Sistema implements InterfaceSistema {
 
     public boolean AlterarPaciente(int id, String mudanca, int escolha) throws SQLException {
         Paciente p = BuscarPacientePorId(id);
+        if (p == null) {
+            return false;
+        }
         switch (escolha) {
             case 1 -> {
                 p.setNome(mudanca);
@@ -328,6 +339,100 @@ public class Sistema implements InterfaceSistema {
                     }
                     // Opcional: log completo para análise
                     e.printStackTrace();
+                }
+                return true;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
+
+    public boolean AlterarAgendamento(int id, String mudanca, int escolha) throws SQLException, Exception {
+        Agendamento a = BuscarAgendamentoPorId(id);
+        SimpleDateFormat sdfH = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat sdfD = new SimpleDateFormat("yyyy-MM-dd");
+        System.out.println(mudanca);
+        if (a == null) {
+            System.out.println("Agendamento nao encontrado");
+            return false;
+        }
+        switch (escolha) {
+            case 1 -> {
+                sdfD.setLenient(false);
+                try {
+                    sdfD.parse(mudanca);
+                } catch (ParseException e) {
+                    System.out.println("Formato de data invalido");
+                    return false;
+                }
+                a.setData(DataAccessObject.convertStringToSqlDate(mudanca));
+                try {
+                    DataAccessObject.atualizarAgendamento(a, mudanca, escolha, USER, PASS);
+                } catch (SQLException e) {
+                    if (e.getSQLState().equals("42000") || e.getMessage().toLowerCase().contains("access denied")) {
+                        System.out.println("Permissão negada: você não tem acesso para executar essa operação.");
+                    } else {
+                        System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
+                    }
+                }
+                return true;
+            }
+            case 2 -> {
+                sdfH.setLenient(false);
+                try {
+                    sdfH.parse(mudanca);
+                } catch (ParseException e) {
+                    System.out.println("Formato de horario invalido");
+                    return false;
+                }
+                a.setHorario(DataAccessObject.convertStringToSqlTime(mudanca));
+                try {
+                    DataAccessObject.atualizarAgendamento(a, mudanca, escolha, USER, PASS);
+                } catch (SQLException e) {
+                    if (e.getSQLState().equals("42000") || e.getMessage().toLowerCase().contains("access denied")) {
+                        System.out.println("Permissão negada: você não tem acesso para executar essa operação.");
+                    } else {
+                        System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
+                    }
+                }
+                return true;
+            }
+            case 3 -> {
+                if (BuscarDentistaPorId(Integer.parseInt(mudanca)) == null) {
+                    System.out.println("Dentista nao encontrado");
+                    return false;
+                }
+                int idd = Integer.parseInt(mudanca);
+                Dentista d = BuscarDentistaPorId(idd);
+                a.setDentist(d);
+                try {
+                    DataAccessObject.atualizarAgendamento(a, mudanca, escolha, USER, PASS);
+                } catch (SQLException e) {
+                    if (e.getSQLState().equals("42000") || e.getMessage().toLowerCase().contains("access denied")) {
+                        System.out.println("Permissão negada: você não tem acesso para executar essa operação.");
+                    } else {
+                        System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
+                    }
+                }
+                return true;
+            }
+            case 4 -> {
+                if (BuscarPacientePorId(Integer.parseInt(mudanca)) == null) {
+                    System.out.println("Dentista nao encontrado");
+                    return false;
+                }
+                int idp = Integer.parseInt(mudanca);
+                Paciente p = BuscarPacientePorId(idp);
+                a.setPacient(p);
+                try {
+                    DataAccessObject.atualizarAgendamento(a, mudanca, escolha, USER, PASS);
+                } catch (SQLException e) {
+                    if (e.getSQLState().equals("42000") || e.getMessage().toLowerCase().contains("access denied")) {
+                        System.out.println("Permissão negada: você não tem acesso para executar essa operação.");
+                    } else {
+                        System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
+                    }
                 }
                 return true;
             }
@@ -440,7 +545,7 @@ public class Sistema implements InterfaceSistema {
         }
         return false;
     }
-    
+
     public boolean RemoverHistorico(int id) {
         Historico h = BuscarHistoricoPorId(id);
         try {
@@ -513,7 +618,7 @@ public class Sistema implements InterfaceSistema {
         }
         return null;
     }
-    
+
     public Historico BuscarHistoricoPorId(int id) {
         for (Historico hist : historicos) {
             if (hist.getId() == id) {

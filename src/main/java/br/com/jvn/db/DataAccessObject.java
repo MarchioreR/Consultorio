@@ -16,6 +16,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class DataAccessObject {
@@ -683,4 +685,88 @@ public class DataAccessObject {
             System.out.println("Erro: valor inválido para idade.");
         }
     }
+
+    public static void atualizarAgendamento(Agendamento a, String change, int option, String USER, String PASS) throws SQLException, ParseException, Exception {
+        Connection conn = FactoryConnection.createConnection(USER, PASS);
+        String sql = null;
+
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = null;
+
+        switch (option) {
+            case 1 -> {
+                sql = "UPDATE Agendamento SET data = ? WHERE id = ?";
+                log1 = new Log(idlog, USER, data_hora, sql);
+                inserirLog(log1, USER, PASS);
+                break;
+            }
+            case 2 -> {
+                sql = "UPDATE Agendamento SET horario = ? WHERE id = ?";
+                log1 = new Log(idlog, USER, data_hora, sql);
+                inserirLog(log1, USER, PASS);
+                break;
+            }
+            case 3 -> {
+                sql = "UPDATE Agendamento SET id_dentista = ? WHERE id = ?";
+                log1 = new Log(idlog, USER, data_hora, sql);
+                inserirLog(log1, USER, PASS);
+                break;
+            }
+            case 4 -> {
+                sql = "UPDATE Agendamento SET id_paciente = ? WHERE id = ?";
+                log1 = new Log(idlog, USER, data_hora, sql);
+                inserirLog(log1, USER, PASS);
+                break;
+            }
+            default -> {
+                System.out.println("Opção inválida.");
+                return;
+            }
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            if (option > 2) {
+                stmt.setInt(1, Integer.parseInt(change));
+            } else if (option == 1) {
+                Date date = convertStringToSqlDate(change);
+                stmt.setDate(1, date);
+            } else {
+                Time time = convertStringToSqlTime(change);
+                stmt.setTime(1, time);
+            }
+            stmt.setInt(2, a.getId());
+            stmt.executeUpdate();
+            System.out.println("Atualizacao realizada com sucesso.");
+        } catch (NumberFormatException e) {
+            System.out.println("Erro: valor inválido para idade.");
+        }
+    }
+
+    public static Time convertStringToSqlTime(String timeStr) throws Exception {
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+
+        // Parse string into java.util.Date (used just to extract time)
+        java.util.Date utilDate = format.parse(timeStr);
+
+        // Convert java.util.Date to java.sql.Time
+        return new Time(utilDate.getTime());
+    }
+
+    public static Date convertStringToSqlDate(String dateStr) throws Exception {
+        // Define the date format according to your input (e.g., "yyyy-MM-dd")
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+        // Parse string into java.util.Date
+        java.util.Date utilDate = format.parse(dateStr);
+
+        // Convert java.util.Date to java.sql.Date
+        return new Date(utilDate.getTime());
+    }
+
 }

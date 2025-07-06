@@ -47,33 +47,38 @@ public class App extends Application {
         return fxmlLoader.load();
     }
 
-    public static void main(String[] args) throws SQLException, RemoteException {
-        
-        Sistema s = new Sistema(/*LOGIN */"admin_Geral",/*Senha */"");
-        
-        s.CriarListaPessoa();
-        for (Pessoa pessoa : s.pessoas) {
-            System.out.print(pessoa.getNome()+ " ");
-            System.out.println();
-        }
-        s.AlterarPaciente(2, "Lima", 1);
-        for (Pessoa pessoa : s.pessoas) {
-            System.out.print(pessoa.getNome()+ " ");
-            System.out.println();
-        }
+    public static void main(String[] args) throws SQLException, RemoteException, Exception {
+
+        Sistema s = new Sistema(/*LOGIN */"admin_Geral",/*Senha */ "");
         /*
+        EXEMPLO DE COMO ALTERAR UM AGENDAMENTO
         s.CriarListaPessoa();
         s.CriarListaAgendamento();
-        s.CriarListaViewAgendamentosHoje();
+
+        for (Agendamento agenda : s.agendas) {
+            System.out.print(agenda.getPacient().getNome() + " ");
+            System.out.println();
+        }
+        s.AlterarAgendamento(1, "2", 4);
+        for (Agendamento agenda : s.agendas) {
+            System.out.print(agenda.getPacient().getNome()+ " ");
+            System.out.println();
+        }
         
+        
+        /////\
         SEQUENCIA PARA VER A VIEW AGENDAMENTOS HOJE
         
         PRA UMA PESSOA QUE SÓ TEM PERMISSÃO DE LEITURA, PRA ELA PODER VER UMA VIEW TEM QUE 
         PRIMEIRO CRIAR TODAS AS LISTAS QUE ESTÃO ENVOLVIDAS NA VIEW E DEPOIS 
         DAR SELECT NA VIEW
         
+        s.CriarListaPessoa();
+        s.CriarListaAgendamento();
+        s.CriarListaViewAgendamentosHoje();
+               
         
-        
+        ///////////
         s.CriarListaPessoa();
         s.CriarListaAgendamento();
         s.CriarListaViewAgendamentoPaciente();
