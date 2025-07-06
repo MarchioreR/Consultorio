@@ -15,6 +15,5 @@ public class Paciente extends Pessoa {
     }
 
     public Paciente() {
-
     }
 }

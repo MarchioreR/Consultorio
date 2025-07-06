@@ -4,6 +4,7 @@
  */
 package br.com.jvn.models;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -14,13 +15,13 @@ public class Log {
 
     private int id;
     private String usuario;
-    private Date data_hora;
+    private Timestamp data_hora;
     private String comando_sql;
 
     public Log() {
     }
 
-    public Log(int id, String usuario, Date data_hora, String comando_sql) {
+    public Log(int id, String usuario, Timestamp data_hora, String comando_sql) {
         this.id = id;
         this.usuario = usuario;
         this.data_hora = data_hora;
@@ -58,14 +59,14 @@ public class Log {
     /**
      * @return the data_hora
      */
-    public Date getData_hora() {
+    public Timestamp getData_hora() {
         return data_hora;
     }
 
     /**
      * @param data_hora the data_hora to set
      */
-    public void setData_hora(Date data_hora) {
+    public void setData_hora(Timestamp data_hora) {
         this.data_hora = data_hora;
     }
 

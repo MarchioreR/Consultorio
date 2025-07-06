@@ -48,8 +48,19 @@ public class App extends Application {
     }
 
     public static void main(String[] args) throws SQLException, RemoteException {
-
-        Sistema s = new Sistema("leitura", "");
+        
+        Sistema s = new Sistema(/*LOGIN */"admin_Geral",/*Senha */"");
+        
+        s.CriarListaPessoa();
+        for (Pessoa pessoa : s.pessoas) {
+            System.out.print(pessoa.getNome()+ " ");
+            System.out.println();
+        }
+        s.AlterarPaciente(2, "Lima", 1);
+        for (Pessoa pessoa : s.pessoas) {
+            System.out.print(pessoa.getNome()+ " ");
+            System.out.println();
+        }
         /*
         s.CriarListaPessoa();
         s.CriarListaAgendamento();
@@ -78,7 +89,7 @@ public class App extends Application {
         PRIMEIRO CRIAR TODAS AS LISTAS QUE ESTÃO ENVOLVIDAS NA VIEW E DEPOIS 
         DAR SELECT NA VIEW
         
-         */
+        
 
         s.CriarListaPessoa();
         s.CriarListaAgendamento();
@@ -88,7 +99,7 @@ public class App extends Application {
             System.out.print(pront.getDentista().getId() + " " + pront.getRelatorio() + " " + pront.getPaciente().getId() + " ");
             System.out.println();
         }
-
+         */
         launch();
     }
 

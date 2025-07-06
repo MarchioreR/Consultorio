@@ -3,6 +3,7 @@ package br.com.jvn.db;
 import br.com.jvn.models.Agendamento;
 import br.com.jvn.models.Dentista;
 import br.com.jvn.models.Historico;
+import br.com.jvn.models.Log;
 import br.com.jvn.models.Paciente;
 import br.com.jvn.models.Pessoa;
 import br.com.jvn.models.Prontuario;
@@ -19,16 +20,32 @@ import java.util.List;
 
 public class DataAccessObject {
 
+    public static ArrayList<Log> logs = new ArrayList<>();
+
+    public DataAccessObject() throws SQLException {
+        logs = carregarLogDoBanco("admin_Geral", "");
+    }
+
     public static ArrayList<Pessoa> carregarPessoasDoBanco(String USER, String PASS) throws SQLException {
         ArrayList<Pessoa> pessoas = new ArrayList<>();
         Connection conn = FactoryConnection.createConnection(USER, PASS);
-
         String sqlPaciente = "SELECT * FROM Paciente";
         String sqlDentista = "SELECT * FROM Dentista";
 
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sqlPaciente);
+        Log log2 = new Log(idlog, USER, data_hora, sqlDentista);
+        inserirLog(log1, USER, PASS);
+        inserirLog(log2, USER, PASS);
+
         try (
                 PreparedStatement stmtPaciente = conn.prepareStatement(sqlPaciente); PreparedStatement stmtDentista = conn.prepareStatement(sqlDentista); ResultSet rsPaciente = stmtPaciente.executeQuery(); ResultSet rsDentista = stmtDentista.executeQuery()) {
-            // Carregar Pacientes
             while (rsPaciente.next()) {
                 int id = rsPaciente.getInt("id");
                 int idade = rsPaciente.getInt("idade");
@@ -63,6 +80,16 @@ public class DataAccessObject {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
 
         String sql = "SELECT * FROM Agendamento";
+
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
 
         try (
                 PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
@@ -102,6 +129,16 @@ public class DataAccessObject {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
 
         String sql = "SELECT * FROM Prontuario";
+
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
 
         try (
                 PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
@@ -148,6 +185,16 @@ public class DataAccessObject {
 
         String sql = "SELECT * FROM Historico";
 
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
+
         try (
                 PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
@@ -186,11 +233,54 @@ public class DataAccessObject {
         return historicos;
     }
 
+    public static ArrayList<Log> carregarLogDoBanco(String USER, String PASS) throws SQLException {
+        ArrayList<Log> logs_ = new ArrayList<>();
+        Connection conn = FactoryConnection.createConnection(USER, PASS);
+
+        String sql = "SELECT * FROM log_transacoes";
+
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
+
+        try (
+                PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String usuario = rs.getString("usuario");
+                Timestamp data_hora_ = rs.getTimestamp("data_hora");
+                String comando_sql = rs.getString("comando_sql");
+
+                Log log = new Log(id, usuario, data_hora_, comando_sql);
+                logs_.add(log);
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao carregar historicos do banco: " + e.getMessage());
+        }
+        return logs_;
+    }
+
     public static ArrayList<Agendamento> carregarViewAgendamentosHoje(ArrayList<Pessoa> pessoas, String USER, String PASS) throws SQLException {
         ArrayList<Agendamento> agendamentos = new ArrayList<>();
         Connection conn = FactoryConnection.createConnection(USER, PASS);
 
         String sql = "SELECT * FROM agendamentos_hoje";
+
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
 
         try (
                 PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
@@ -228,6 +318,17 @@ public class DataAccessObject {
     public static void inserirDentista(Dentista d, String USER, String PASS) throws SQLException {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
         String sql = "INSERT INTO Dentista (id, nome, idade, email, telefone) VALUES (?, ?, ?, ?, ?)";
+
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, d.getId());
             stmt.setString(2, d.getNome());
@@ -241,6 +342,17 @@ public class DataAccessObject {
     public static void inserirPaciente(Paciente p, String USER, String PASS) throws SQLException {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
         String sql = "INSERT INTO Paciente (id, nome, idade, email, telefone) VALUES (?, ?, ?, ?, ?)";
+
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, p.getId());
             stmt.setString(2, p.getNome());
@@ -254,6 +366,17 @@ public class DataAccessObject {
     public static void inserirAgendamento(Agendamento a, String USER, String PASS) throws SQLException {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
         String sql = "INSERT INTO Agendamento (id, data, horario, id_dentista, id_paciente) VALUES (?, ?, ?, ?, ?)";
+
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, a.getId());
             stmt.setDate(2, a.getData());
@@ -267,6 +390,17 @@ public class DataAccessObject {
     public static void inserirProntuario(Prontuario p, String USER, String PASS) throws SQLException {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
         String sql = "INSERT INTO Agendamento (id, data, id_agendamento, id_dentista, id_paciente) VALUES (?, ?, ?, ?, ?)";
+
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, p.getId());
             stmt.setString(2, p.getRelatorio());
@@ -280,6 +414,17 @@ public class DataAccessObject {
     public static void inserirHistorico(Historico h, String USER, String PASS) throws SQLException {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
         String sql = "INSERT INTO Historico (id, id_agendamento, id_dentista, id_paciente) VALUES (?, ?, ?, ?)";
+
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, h.getId());
             stmt.setInt(2, h.getAgenda().getId());
@@ -289,9 +434,31 @@ public class DataAccessObject {
         }
     }
 
+    public static void inserirLog(Log l, String USER, String PASS) throws SQLException {
+        Connection conn = FactoryConnection.createConnection(USER, PASS);
+        String sql = "INSERT INTO log_transacoes (id, usuario, data_hora, comando_sql) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, l.getId());
+            stmt.setString(2, l.getUsuario());
+            stmt.setTimestamp(3, l.getData_hora());
+            stmt.setString(4, l.getComando_sql());
+            stmt.executeUpdate();
+        }
+    }
+
     public static void deletarDentista(Dentista d, String USER, String PASS) throws SQLException {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
         String sql = "DELETE FROM Dentista WHERE id = ?";
+
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, d.getId());
@@ -303,6 +470,16 @@ public class DataAccessObject {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
         String sql = "DELETE FROM Paciente WHERE id = ?";
 
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, p.getId());
             stmt.executeUpdate();
@@ -312,6 +489,16 @@ public class DataAccessObject {
     public static void deletarAgendamento(Agendamento a, String USER, String PASS) throws SQLException {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
         String sql = "DELETE FROM Agendamento WHERE id = ?";
+
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, a.getId());
@@ -323,6 +510,16 @@ public class DataAccessObject {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
         String sql = "DELETE FROM Prontuario WHERE id = ?";
 
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, p.getId());
             stmt.executeUpdate();
@@ -333,8 +530,38 @@ public class DataAccessObject {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
         String sql = "DELETE FROM Historico WHERE id = ?";
 
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, h.getId());
+            stmt.executeUpdate();
+        }
+    }
+
+    public static void deletarLog(Log l, String USER, String PASS) throws SQLException {
+        Connection conn = FactoryConnection.createConnection(USER, PASS);
+        String sql = "DELETE FROM log_transacoes WHERE id = ?";
+
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log1, USER, PASS);
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, l.getId());
             stmt.executeUpdate();
         }
     }
@@ -343,15 +570,40 @@ public class DataAccessObject {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
         String sql = null;
 
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = null;
+
         switch (option) {
-            case 1 ->
+            case 1 -> {
                 sql = "UPDATE Dentista SET nome = ? WHERE id = ?";
-            case 2 ->
+                log1 = new Log(idlog, USER, data_hora, sql);
+                inserirLog(log1, USER, PASS);
+                break;
+            }
+            case 2 -> {
                 sql = "UPDATE Dentista SET idade = ? WHERE id = ?";
-            case 3 ->
+                log1 = new Log(idlog, USER, data_hora, sql);
+                inserirLog(log1, USER, PASS);
+                break;
+            }
+            case 3 -> {
                 sql = "UPDATE Dentista SET email = ? WHERE id = ?";
-            case 4 ->
+                log1 = new Log(idlog, USER, data_hora, sql);
+                inserirLog(log1, USER, PASS);
+                break;
+            }
+            case 4 -> {
                 sql = "UPDATE Dentista SET telefone = ? WHERE id = ?";
+                log1 = new Log(idlog, USER, data_hora, sql);
+                inserirLog(log1, USER, PASS);
+                break;
+            }
             default -> {
                 System.out.println("Opção inválida.");
                 return;
@@ -377,15 +629,40 @@ public class DataAccessObject {
         Connection conn = FactoryConnection.createConnection(USER, PASS);
         String sql = null;
 
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        int idlog = 0;
+        if (logs.isEmpty()) {
+            idlog = 0;
+        } else {
+            idlog = logs.getLast().getId() + 1;
+        }
+        Log log1 = null;
+
         switch (option) {
-            case 1 ->
+            case 1 -> {
                 sql = "UPDATE Paciente SET nome = ? WHERE id = ?";
-            case 2 ->
+                log1 = new Log(idlog, USER, data_hora, sql);
+                inserirLog(log1, USER, PASS);
+                break;
+            }
+            case 2 -> {
                 sql = "UPDATE Paciente SET idade = ? WHERE id = ?";
-            case 3 ->
+                log1 = new Log(idlog, USER, data_hora, sql);
+                inserirLog(log1, USER, PASS);
+                break;
+            }
+            case 3 -> {
                 sql = "UPDATE Paciente SET email = ? WHERE id = ?";
-            case 4 ->
+                log1 = new Log(idlog, USER, data_hora, sql);
+                inserirLog(log1, USER, PASS);
+                break;
+            }
+            case 4 -> {
                 sql = "UPDATE Paciente SET telefone = ? WHERE id = ?";
+                log1 = new Log(idlog, USER, data_hora, sql);
+                inserirLog(log1, USER, PASS);
+                break;
+            }
             default -> {
                 System.out.println("Opção inválida.");
                 return;

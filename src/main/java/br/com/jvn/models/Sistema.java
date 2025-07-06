@@ -26,7 +26,6 @@ public class Sistema implements InterfaceSistema {
     public ArrayList<Agendamento> agendas = new ArrayList<>();
     public ArrayList<Historico> historicos = new ArrayList<>();
     public ArrayList<Prontuario> prontuarios = new ArrayList<>();
-    public ArrayList<Log> logs = new ArrayList<>();
     public String USER = "";
     public String PASS = "";
 
