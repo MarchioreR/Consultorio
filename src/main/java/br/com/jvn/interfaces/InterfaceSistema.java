@@ -44,6 +44,8 @@ public interface InterfaceSistema {
     public boolean AlterarPaciente(int id, String mudanca, int escolha) throws SQLException;
 
     public boolean AlterarAgendamento(int id, String mudanca, int escolha) throws SQLException, Exception;
+    
+    public boolean AlterarProntuario(int id, String mudanca, int escolha) throws SQLException, Exception;
 
     public Pessoa GetPessoaOnPOS(int pos);
 

@@ -686,86 +686,89 @@ public class DataAccessObject {
         }
     }
 
-    public static void atualizarAgendamento(Agendamento a, String change, int option, String USER, String PASS) throws SQLException, ParseException, Exception {
-        Connection conn = FactoryConnection.createConnection(USER, PASS);
-        String sql = null;
+    public static void atualizarAgendamento(Agendamento a, String change, int option, String USER, String PASS) throws SQLException {
+        if (option < 1 || option > 4) {
+            System.out.println("Opção inválida.");
+            return;
+        }
 
+        String[] campos = {"data", "horario", "id_dentista", "id_paciente"};
+        String campo = campos[option - 1];
+        String sql = "UPDATE Agendamento SET " + campo + " = ? WHERE id = ?";
+
+        int idlog = logs.isEmpty() ? 0 : logs.getLast().getId() + 1;
         Timestamp data_hora = new Timestamp(System.currentTimeMillis());
-        int idlog = 0;
-        if (logs.isEmpty()) {
-            idlog = 0;
-        } else {
-            idlog = logs.getLast().getId() + 1;
-        }
-        Log log1 = null;
+        Log log = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log, USER, PASS);
 
-        switch (option) {
-            case 1 -> {
-                sql = "UPDATE Agendamento SET data = ? WHERE id = ?";
-                log1 = new Log(idlog, USER, data_hora, sql);
-                inserirLog(log1, USER, PASS);
-                break;
-            }
-            case 2 -> {
-                sql = "UPDATE Agendamento SET horario = ? WHERE id = ?";
-                log1 = new Log(idlog, USER, data_hora, sql);
-                inserirLog(log1, USER, PASS);
-                break;
-            }
-            case 3 -> {
-                sql = "UPDATE Agendamento SET id_dentista = ? WHERE id = ?";
-                log1 = new Log(idlog, USER, data_hora, sql);
-                inserirLog(log1, USER, PASS);
-                break;
-            }
-            case 4 -> {
-                sql = "UPDATE Agendamento SET id_paciente = ? WHERE id = ?";
-                log1 = new Log(idlog, USER, data_hora, sql);
-                inserirLog(log1, USER, PASS);
-                break;
-            }
-            default -> {
-                System.out.println("Opção inválida.");
-                return;
-            }
-        }
+        try (Connection conn = FactoryConnection.createConnection(USER, PASS); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            if (option > 2) {
-                stmt.setInt(1, Integer.parseInt(change));
-            } else if (option == 1) {
-                Date date = convertStringToSqlDate(change);
-                stmt.setDate(1, date);
-            } else {
-                Time time = convertStringToSqlTime(change);
-                stmt.setTime(1, time);
+            switch (option) {
+                case 1 ->
+                    stmt.setDate(1, convertStringToSqlDate(change));
+                case 2 ->
+                    stmt.setTime(1, convertStringToSqlTime(change));
+                case 3, 4 ->
+                    stmt.setInt(1, Integer.parseInt(change));
             }
+
             stmt.setInt(2, a.getId());
             stmt.executeUpdate();
             System.out.println("Atualizacao realizada com sucesso.");
+
         } catch (NumberFormatException e) {
-            System.out.println("Erro: valor inválido para idade.");
+            System.out.println("Erro: valor inválido para número.");
+        } catch (Exception e) {
+            System.out.println("Erro ao atualizar agendamento: " + e.getMessage());
+        }
+    }
+
+    public static void atualizarProntuario(Prontuario pront, String change, int option, String USER, String PASS) throws SQLException {
+        if (option < 1 || option > 4) {
+            System.out.println("Opção inválida.");
+            return;
+        }
+
+        String[] campos = {"relatorio", "id_agendamento", "id_dentista", "id_paciente"};
+        String campo = campos[option - 1];
+        String sql = "UPDATE Prontuario SET " + campo + " = ? WHERE id = ?";
+
+        int idlog = logs.isEmpty() ? 0 : logs.getLast().getId() + 1;
+        Timestamp data_hora = new Timestamp(System.currentTimeMillis());
+        Log log = new Log(idlog, USER, data_hora, sql);
+        inserirLog(log, USER, PASS);
+
+        try (Connection conn = FactoryConnection.createConnection(USER, PASS); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            switch (option) {
+                case 1 ->
+                    stmt.setString(1, change);
+                case 2, 3, 4 ->
+                    stmt.setInt(1, Integer.parseInt(change));
+            }
+
+            stmt.setInt(2, pront.getId());
+            stmt.executeUpdate();
+            System.out.println("Atualizacao realizada com sucesso.");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Erro: valor inválido para número.");
+        } catch (Exception e) {
+            System.out.println("Erro ao atualizar Prontuario: " + e.getMessage());
         }
     }
 
     public static Time convertStringToSqlTime(String timeStr) throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-
-        // Parse string into java.util.Date (used just to extract time)
+        format.setLenient(false);
         java.util.Date utilDate = format.parse(timeStr);
-
-        // Convert java.util.Date to java.sql.Time
         return new Time(utilDate.getTime());
     }
 
     public static Date convertStringToSqlDate(String dateStr) throws Exception {
-        // Define the date format according to your input (e.g., "yyyy-MM-dd")
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-
-        // Parse string into java.util.Date
+        format.setLenient(false);
         java.util.Date utilDate = format.parse(dateStr);
-
-        // Convert java.util.Date to java.sql.Date
         return new Date(utilDate.getTime());
     }
 

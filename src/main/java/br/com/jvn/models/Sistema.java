@@ -350,96 +350,129 @@ public class Sistema implements InterfaceSistema {
 
     public boolean AlterarAgendamento(int id, String mudanca, int escolha) throws SQLException, Exception {
         Agendamento a = BuscarAgendamentoPorId(id);
-        SimpleDateFormat sdfH = new SimpleDateFormat("HH:mm:ss");
-        SimpleDateFormat sdfD = new SimpleDateFormat("yyyy-MM-dd");
-        System.out.println(mudanca);
         if (a == null) {
             System.out.println("Agendamento nao encontrado");
             return false;
         }
-        switch (escolha) {
-            case 1 -> {
-                sdfD.setLenient(false);
-                try {
-                    sdfD.parse(mudanca);
-                } catch (ParseException e) {
-                    System.out.println("Formato de data invalido");
+
+        SimpleDateFormat sdf = switch (escolha) {
+            case 1 ->
+                new SimpleDateFormat("yyyy-MM-dd");
+            case 2 ->
+                new SimpleDateFormat("HH:mm:ss");
+            default ->
+                null;
+        };
+
+        try {
+            switch (escolha) {
+                case 1 -> {
+                    sdf.setLenient(false);
+                    sdf.parse(mudanca);
+                    a.setData(DataAccessObject.convertStringToSqlDate(mudanca));
+                }
+                case 2 -> {
+                    sdf.setLenient(false);
+                    sdf.parse(mudanca);
+                    a.setHorario(DataAccessObject.convertStringToSqlTime(mudanca));
+                }
+                case 3 -> {
+                    int idDentista = Integer.parseInt(mudanca);
+                    Dentista d = BuscarDentistaPorId(idDentista);
+                    if (d == null) {
+                        System.out.println("Dentista nao encontrado");
+                        return false;
+                    }
+                    a.setDentist(d);
+                }
+                case 4 -> {
+                    int idPaciente = Integer.parseInt(mudanca);
+                    Paciente p = BuscarPacientePorId(idPaciente);
+                    if (p == null) {
+                        System.out.println("Paciente nao encontrado");
+                        return false;
+                    }
+                    a.setPacient(p);
+                }
+                default -> {
                     return false;
                 }
-                a.setData(DataAccessObject.convertStringToSqlDate(mudanca));
-                try {
-                    DataAccessObject.atualizarAgendamento(a, mudanca, escolha, USER, PASS);
-                } catch (SQLException e) {
-                    if (e.getSQLState().equals("42000") || e.getMessage().toLowerCase().contains("access denied")) {
-                        System.out.println("Permissão negada: você não tem acesso para executar essa operação.");
-                    } else {
-                        System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
-                    }
-                }
-                return true;
             }
-            case 2 -> {
-                sdfH.setLenient(false);
-                try {
-                    sdfH.parse(mudanca);
-                } catch (ParseException e) {
-                    System.out.println("Formato de horario invalido");
-                    return false;
-                }
-                a.setHorario(DataAccessObject.convertStringToSqlTime(mudanca));
-                try {
-                    DataAccessObject.atualizarAgendamento(a, mudanca, escolha, USER, PASS);
-                } catch (SQLException e) {
-                    if (e.getSQLState().equals("42000") || e.getMessage().toLowerCase().contains("access denied")) {
-                        System.out.println("Permissão negada: você não tem acesso para executar essa operação.");
-                    } else {
-                        System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
-                    }
-                }
-                return true;
+
+            DataAccessObject.atualizarAgendamento(a, mudanca, escolha, USER, PASS);
+            return true;
+
+        } catch (ParseException e) {
+            String tipo = (escolha == 1) ? "data" : "horario";
+            System.out.println("Formato de " + tipo + " invalido");
+            return false;
+
+        } catch (SQLException e) {
+            if (e.getSQLState().equals("42000") || e.getMessage().toLowerCase().contains("access denied")) {
+                System.out.println("Permissão negada: você não tem acesso para executar essa operação.");
+            } else {
+                System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
             }
-            case 3 -> {
-                if (BuscarDentistaPorId(Integer.parseInt(mudanca)) == null) {
-                    System.out.println("Dentista nao encontrado");
-                    return false;
-                }
-                int idd = Integer.parseInt(mudanca);
-                Dentista d = BuscarDentistaPorId(idd);
-                a.setDentist(d);
-                try {
-                    DataAccessObject.atualizarAgendamento(a, mudanca, escolha, USER, PASS);
-                } catch (SQLException e) {
-                    if (e.getSQLState().equals("42000") || e.getMessage().toLowerCase().contains("access denied")) {
-                        System.out.println("Permissão negada: você não tem acesso para executar essa operação.");
-                    } else {
-                        System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
-                    }
-                }
-                return true;
-            }
-            case 4 -> {
-                if (BuscarPacientePorId(Integer.parseInt(mudanca)) == null) {
-                    System.out.println("Dentista nao encontrado");
-                    return false;
-                }
-                int idp = Integer.parseInt(mudanca);
-                Paciente p = BuscarPacientePorId(idp);
-                a.setPacient(p);
-                try {
-                    DataAccessObject.atualizarAgendamento(a, mudanca, escolha, USER, PASS);
-                } catch (SQLException e) {
-                    if (e.getSQLState().equals("42000") || e.getMessage().toLowerCase().contains("access denied")) {
-                        System.out.println("Permissão negada: você não tem acesso para executar essa operação.");
-                    } else {
-                        System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
-                    }
-                }
-                return true;
-            }
-            default -> {
-                return false;
-            }
+            return false;
         }
+    }
+
+    public boolean AlterarProntuario(int id, String mudanca, int escolha) throws SQLException, Exception {
+        Prontuario pront = BuscarProntuarioPorId(id);
+        if (pront == null) {
+            System.out.println("Prontuario nao encontrado");
+            return false;
+        }
+
+        try {
+            switch (escolha) {
+                case 1 -> {
+                    pront.setRelatorio(mudanca);
+                }
+                case 2 -> {
+                    int idAgendamento = Integer.parseInt(mudanca);
+                    Agendamento a = BuscarAgendamentoPorId(idAgendamento);
+                    if (a == null) {
+                        System.out.println("Dentista nao encontrado");
+                        return false;
+                    }
+                    pront.setAgenda(a);
+                }
+                case 3 -> {
+                    int idDentista = Integer.parseInt(mudanca);
+                    Dentista d = BuscarDentistaPorId(idDentista);
+                    if (d == null) {
+                        System.out.println("Dentista nao encontrado");
+                        return false;
+                    }
+                    pront.setDentista(d);
+                }
+                case 4 -> {
+                    int idPaciente = Integer.parseInt(mudanca);
+                    Paciente p = BuscarPacientePorId(idPaciente);
+                    if (p == null) {
+                        System.out.println("Paciente nao encontrado");
+                        return false;
+                    }
+                    pront.setPaciente(p);
+                }
+                default -> {
+                    return false;
+                }
+            }
+
+            DataAccessObject.atualizarProntuario(pront, mudanca, escolha, USER, PASS);
+            return true;
+
+        } catch (SQLException e) {
+            if (e.getSQLState().equals("42000") || e.getMessage().toLowerCase().contains("access denied")) {
+                System.out.println("Permissão negada: você não tem acesso para executar essa operação.");
+            } else {
+                System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
+            }
+            return false;
+        }
+
     }
 
 //  Consegue o objeto Pessoa em uma posição escolhida da tabela na view

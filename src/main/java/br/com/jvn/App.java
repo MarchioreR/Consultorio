@@ -51,7 +51,21 @@ public class App extends Application {
 
         Sistema s = new Sistema(/*LOGIN */"admin_Geral",/*Senha */ "");
         /*
-        EXEMPLO DE COMO ALTERAR UM AGENDAMENTO
+        //EXEMPLO DE COMO ALTERAR UM PRONTUARIO
+        s.CriarListaPessoa();
+        s.CriarListaAgendamento();
+        s.CriarListaProntuario();
+        for (Prontuario pront : s.prontuarios) {
+            System.out.print(pront.getRelatorio() + " ");
+            System.out.println();
+        }
+        s.AlterarProntuario(1, "Maquina de animal", 1);
+        for (Prontuario pront : s.prontuarios) {
+            System.out.print(pront.getRelatorio()+ " ");
+            System.out.println();
+        }
+        
+        //EXEMPLO DE COMO ALTERAR UM AGENDAMENTO
         s.CriarListaPessoa();
         s.CriarListaAgendamento();
 
@@ -59,7 +73,7 @@ public class App extends Application {
             System.out.print(agenda.getPacient().getNome() + " ");
             System.out.println();
         }
-        s.AlterarAgendamento(1, "2", 4);
+        s.AlterarAgendamento(3, "2", 4);
         for (Agendamento agenda : s.agendas) {
             System.out.print(agenda.getPacient().getNome()+ " ");
             System.out.println();
